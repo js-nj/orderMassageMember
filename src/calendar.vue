@@ -15,9 +15,9 @@
       </div>
     </div>
     <div class="calendar__main">
-      <div class="calendar__today" @click="goToday">
+      <!-- <div class="calendar__today" @click="goToday">
         今天
-      </div>
+      </div> -->
       <div class="calendar__date">
         <!-- 星期 -->
         <div class="calendar__weekdays">
@@ -280,6 +280,10 @@ export default {
       type: Boolean,
       'default': true,
       propsync:false//不会被propsync实现双向绑定
+    },
+    mainFrom:{
+      type:Number,
+      propsync:false//不会被propsync实现双向绑定
     }
   },
   computed: {
@@ -311,11 +315,17 @@ export default {
           dayslength = 35
           startDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth())
           startDay = startDate.getDay()
-        } else {
+        } else if(this.view === 'week'){
           dayslength = 7
           startDate = this.startDate
           startDay = startDate.getDay()
+        }else if(this.view === 'month2'){
+          dayslength = 7
+          startDate = this.startDate
+          startDay = startDate.getDay()
+          alert('我是按照月份设置预约')
         }
+
         if (this.startMonday) {
           leftPadding = startDay ? startDay - 1 : 6
         } else {
@@ -399,6 +409,7 @@ export default {
     },
     select(day) {
       this.p_selected = day;
+      this.$emit('selectDate')
     },
     goToday() {
       this.startDate = new Date
