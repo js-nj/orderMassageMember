@@ -3,6 +3,7 @@
     <div>
       <h1 class="title">预约按摩</h1>
       <mt-navbar v-model="selected">
+
         <mt-tab-item id="1">预约</mt-tab-item>
         <mt-tab-item id="2">我的预约</mt-tab-item>
       </mt-navbar>
@@ -10,6 +11,7 @@
       <!-- tab-container -->
       <mt-tab-container v-model="selected">
         <mt-tab-container-item id="1">
+
           <div>
             <mt-field label="员工号" placeholder="请输入员工号" type="number" v-model="userid"></mt-field>
             <mt-field label="姓名" placeholder="请输入姓名" type="text" v-model="username"></mt-field>
@@ -26,6 +28,7 @@
                       value: '1'
                     }]">
             </mt-radio>
+
             <!-- 选择预约的时间段 -->
             <div v-on:click="chooseTimeFiled">
               <mt-field label="设置时间范围" placeholder="请输入时间" type="text" v-model="pickerValue" ></mt-field>
@@ -64,7 +67,6 @@
               </table>
             </div>
           </div>
-          
         </mt-tab-container-item>
       </mt-tab-container>
       
@@ -110,6 +112,7 @@
       data(){
         return {
           selected:'1',
+
           orderedInfo:[],
           username:'',
           userid:'',
@@ -168,6 +171,7 @@
             });
           }
         },
+
         onTimeValuesChange(picker, values) {
           this.pickerValue = values[0];
         },
@@ -176,14 +180,12 @@
         }
       },
       created() {
-
       },
       components: {
         // [TabItem.name]: TabItem,
         // [Navbar.name]: Navbar,
         // [Field.name]: Field,
         // [Cell.name]: Cell,
-
       }
   }
 </script>
