@@ -63,7 +63,7 @@ module.exports = {
     historyApiFallback: true,
     noInfo: true,
     host: '0.0.0.0',
-    port: 8087
+    port: 8082
   },
   performance: {
     hints: false

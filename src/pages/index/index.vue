@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div>
-      <h1 class="title">预约按摩</h1>
+      <h3 class="title">预约按摩</h3>
       <mt-navbar v-model="selected">
 
         <mt-tab-item id="1">预约</mt-tab-item>
@@ -13,8 +13,8 @@
         <mt-tab-container-item id="1">
 
           <div>
-            <mt-field label="员工号" placeholder="请输入员工号" type="number" v-model="userid"></mt-field>
-            <mt-field label="姓名" placeholder="请输入姓名" type="text" v-model="username"></mt-field>
+            <!-- <mt-field label="员工号" placeholder="请输入员工号" type="number" v-model="userid"></mt-field>
+            <mt-field label="姓名" placeholder="请输入姓名" type="text" v-model="username"></mt-field> -->
             <mt-field label="日期" placeholder="日期" type="date" v-model="orderdate"></mt-field>
             <mt-radio
               title="设置地点"
@@ -38,8 +38,8 @@
               position="bottom" style="width: 100%;">
               <mt-picker :slots="timeslots" @change="onTimeValuesChange"></mt-picker>
             </mt-popup>
-            <mt-button type="primary">预约</mt-button>
-            <mt-button type="danger">取消预约</mt-button>
+            <mt-button type="primary" size="large" class="om-button">预约</mt-button>
+
           </div>
         </mt-tab-container-item>
         <mt-tab-container-item id="2">
@@ -53,6 +53,7 @@
                     <td>地点</td>
                     <td>员工号</td>
                     <td>姓名</td>
+                    <td>操作</td>
                   </tr>
                 </thead>
                 <tbody>
@@ -62,6 +63,7 @@
                     <td>item.Station</td>
                     <td>item.EmployeeNum</td>
                     <td>item.EmployeeName</td>
+                    <td><mt-button type="danger">取消预约</mt-button></td>
                   </tr>
                 </tbody>
               </table>
@@ -89,7 +91,7 @@
   .title {
     text-align: center;
     padding: 10px;
-    color: #31b29c;
+    color: #26a2ff;
   }
   .action {
     display: inline-block;
@@ -101,6 +103,41 @@
   .om-pv-8 {
     padding-top: 8px;
     padding-bottom: 8px;
+  }
+  .om-button {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+  }
+  .mint-tab-item-label {
+    font-size:16px;
+    font-weight: 600;
+  }
+  .mint-tab-container {
+    margin-top: 8px;
+  }
+  .mint-navbar .mint-tab-item.is-selected {
+    border-bottom: 3px solid #26a2ff;
+    color: #26a2ff;
+    margin-bottom: 0px;
+  }
+  .mint-button--primary {
+    background-color:#26a2ff;
+  }
+  .mint-cell-wrapper {
+        font-size: 15px;
+        padding: 0 36px;
+  }
+  .mint-checklist-title,.mint-radiolist-title {
+    font-size: 15px;
+    color: #333;
+    font-weight: 600;
+  }
+  .mint-radiolist {
+        padding: 0 29px;
+  }
+  .mint-radiolist-title {
+    font-weight: 400;
   }
 </style>
 
