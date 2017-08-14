@@ -2,23 +2,20 @@
   <div class="main">
     <div>
       <h3 class="title">预约按摩</h3>
-      <mt-navbar v-model="selected">
+      <mt-navbar v-model="tabselected">
 
         <mt-tab-item id="1">预约</mt-tab-item>
         <mt-tab-item id="2">我的预约</mt-tab-item>
       </mt-navbar>
 
       <!-- tab-container -->
-      <mt-tab-container v-model="selected">
+      <mt-tab-container v-model="tabselected">
         <mt-tab-container-item id="1">
 
           <div>
-            <!-- <mt-field label="员工号" placeholder="请输入员工号" type="number" v-model="userid"></mt-field>
-            <mt-field label="姓名" placeholder="请输入姓名" type="text" v-model="username"></mt-field> -->
-            <mt-field label="日期" placeholder="日期" type="date" v-model="orderdate"></mt-field>
             <mt-radio
-              title="设置地点"
-              v-model="value"
+              title="选择预约地点"
+              v-model="stationValue"
               :options="[{
                       label: '金智园区',
                       value: '0'
@@ -28,6 +25,18 @@
                       value: '1'
                     }]">
             </mt-radio>
+            <!-- <mt-field label="员工号" placeholder="请输入员工号" type="number" v-model="userid"></mt-field>
+            <mt-field label="姓名" placeholder="请输入姓名" type="text" v-model="username"></mt-field> -->
+            <!-- <mt-field label="日期" placeholder="日期" type="date" v-model="orderdate"></mt-field> -->
+            <!-- 选择预约的日期 -->
+            <div v-on:click="chooseDay">
+              <mt-field label="设置日期" placeholder="请选择日期" type="text" v-model="pickerDayValue" ></mt-field>
+            </div>
+            <mt-popup
+              v-model="popupDayVisible"
+              position="bottom" style="width: 100%;">
+              <mt-picker :slots="dayslots" @change="onDaysValuesChange"></mt-picker>
+            </mt-popup>
 
             <!-- 选择预约的时间段 -->
             <div v-on:click="chooseTimeFiled">
@@ -38,32 +47,32 @@
               position="bottom" style="width: 100%;">
               <mt-picker :slots="timeslots" @change="onTimeValuesChange"></mt-picker>
             </mt-popup>
-            <mt-button type="primary" size="large" class="om-button">预约</mt-button>
+            <mt-button type="primary" size="large" class="om-button" @click="saveHealthOrder">预约</mt-button>
 
           </div>
         </mt-tab-container-item>
         <mt-tab-container-item id="2">
           <div>
-            <div v-for="item in orderedInfo" class="om-pv-8">
-              <table>
+            <div  class="om-pv-8 om-ph-8">
+              <table style="width:100%;">
                 <thead>
                   <tr>
+                    <!-- <td>预约编号</td> -->
                     <td>日期</td>
                     <td>时间</td>
                     <td>地点</td>
                     <td>员工号</td>
                     <td>姓名</td>
-                    <td>操作</td>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>item.DayTime</td>
-                    <td>item.timeSlot</td>
-                    <td>item.Station</td>
-                    <td>item.EmployeeNum</td>
-                    <td>item.EmployeeName</td>
-                    <td><mt-button type="danger">取消预约</mt-button></td>
+                  <tr v-for="item in orderedInfo" style="height:24px;">
+                    <!-- <td v-text="item.id"></td> -->
+                    <td v-text="item.dayTime"></td>
+                    <td v-text="item.timeSlot"></td>
+                    <td v-text="item.station"></td>
+                    <td v-text="item.EmployeeId"></td>
+                    <td v-text="item.EmployeeName"></td>
                   </tr>
                 </tbody>
               </table>
@@ -104,6 +113,10 @@
     padding-top: 8px;
     padding-bottom: 8px;
   }
+  .om-ph-8 {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
   .om-button {
     width: 100%;
     position: fixed;
@@ -143,25 +156,52 @@
 
 <script>
   //import CalendarDemo from './calendar-demo.vue'
-  //import { Navbar, TabItem ,Field ,Cell} from 'bh-mint-ui2';
+  import { Toast} from 'bh-mint-ui2';
+  import api from '../../api.js';
+  import axios from 'axios'
   import moment from 'moment'
   export default {
       data(){
         return {
-          selected:'1',
+          tabselected:'1',
 
-          orderedInfo:[],
-          username:'',
-          userid:'',
+          orderedInfo:[
+          {
+            id:'44',
+            dayTime:'44',
+            timeSlot:'44',
+            station:'44',
+            EmployeeId:'44',
+            EmployeeName:'44'
+          },{
+            id:'44',
+            dayTime:'44',
+            timeSlot:'44',
+            station:'44',
+            EmployeeId:'44',
+            EmployeeName:'44'
+          }],
+          // username:'',
+          // userid:'',
           orderdate:'',
-          value:'ss',
+          stationValue:'0',
           pickerValue:'',
+          pickerDayValue:'',
           //时间范围
           popupTimeVisible:false,
+          popupDayVisible:false,
+          dayslots:[
+            {
+              flex: 1,
+              values: [],
+              className: 'slot2',
+              textAlign: 'center'
+            }
+          ],
           timeslots:[
             {
               flex: 1,
-              values: ['08:00-08:30','08:30-09:00','01:00-01:30','02:00-02:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30','08:00-08:30',],
+              values: [],
               className: 'slot1',
               textAlign: 'center'
             }
@@ -172,51 +212,140 @@
         
       },
       watch: {
-        selected:function(value,oldvalue){
-          if (value == 2) {
-            this.selectDate();
+        tabselected:function(value,oldvalue){
+          if (value == 1) {
+            this.getDay();
+            this.getTimeOrder();
+          }else if(value == 2){
+            //this.getOrderInfo();
           }
         }
       },
       methods: {
-        selectDate() {
-          var that= this;
-          if (this.selected == 1) {
-            that.orderedInfo = [];
-            //已经预约的信息
-            axios({
-                method:"POST",
-                url:api.appsCount,
-                params:{
-                }
-            }).then(function(response){
-              var responseData = response.data.datas.appscount.rows;
-              if (response.data.code == 0) {
-                  if (responseData && responseData.length>0) {
-                    responseData.map(function(item){
-                      var itemObj = item;
-                      itemObj.time='xxx';
-                      itemObj.name = 'xxx';
-                      that.orderedInfo.push(itemObj);
-                    });
-                  }
-              }else {
-                Toast('获取预约信息失败');
-              }
-            }).catch(function(err){
-              Toast(err);
-            });
-          }
-        },
-
         onTimeValuesChange(picker, values) {
           this.pickerValue = values[0];
         },
         chooseTimeFiled(){
           this.popupTimeVisible = true;
+        },
+        chooseDay() {
+          this.popupDayVisible = true;
+        },
+        onDaysValuesChange(picker, values){
+          this.pickerDayValue = values[0];
+        },
+        getTimeOrder(){
+          var that = this;
+          that.timeslots[0].values = [];
+          axios({
+              method:"POST",
+              url:api.getTimeOrder,
+              params:{
+                station:that.stationValue
+              }
+          }).then(function(response){
+            if (response.data.rescode == 0) {
+                if (response.data.resMessage && response.data.resMessage.length>0) {
+                  response.data.resMessage.map(function(item){
+                    that.timeslots[0].values.push(item.timeSlot);
+                  });
+                }
+            }else {
+              Toast('获取预约信息失败');
+            }
+          }).catch(function(err){
+            Toast(err);
+          });
+        },
+        getDay(){
+          var that = this;
+          that.dayslots[0].values = [];
+          axios({
+              method:"POST",
+              url:api.getDay,
+              params:{
+                station:that.stationValue
+              }
+          }).then(function(response){
+            if (response.data.rescode == 0) {
+                if (response.data.resMessage && response.data.resMessage.length>0) {
+                  response.data.resMessage.map(function(item){
+                    var formatItem = that.formatDate(new Date(item.dayTime));
+                    that.dayslots[0].values.push(formatItem);
+                  });
+                }
+            }else {
+              Toast('获取预约信息失败');
+            }
+          }).catch(function(err){
+            Toast(err);
+          });
+        },
+        saveHealthOrder(){
+          var that = this;
+          axios({
+              method:"POST",
+              url:api.saveHealthOrder,
+              params:{
+                day_time:that.pickerDayValue,
+                time_slot:that.pickerValue,
+                station:that.stationValue,
+                employeeId:'01315123'
+              }
+          }).then(function(response){
+            if (response.data.rescode == 0) {
+                
+            }else {
+              Toast('保存预约信息失败');
+            }
+          }).catch(function(err){
+            Toast(err);
+          });
+        },
+        getOrderInfo() {
+          var that= this;
+          that.orderedInfo = [];
+          var paramsObj = {
+              method:"POST",
+              url:api.getOrderInfo,
+              params:{
+                employeeId:'01315123'
+              }
+          };
+          //保存的信息
+          axios(paramsObj).then(function(response){
+            var responseData = response.data;
+            if (responseData.rescode == 0) {
+              if (responseData.resMessage) {
+                responseData.resMessage.forEach(function(item){
+                  that.orderedInfo.push(item);
+                });
+              }
+            }else {
+              Toast('获取自己已经预约信息失败');
+            }
+          }).catch(function(err){
+            Toast(err);
+          }); 
+        },
+        //格局化日期：yyyy-MM-dd 
+        formatDate: function(date) { 
+            var myyear = date.getFullYear(); 
+            var mymonth = date.getMonth()+1; 
+            var myweekday = date.getDate(); 
+
+            if(mymonth < 10){ 
+            mymonth = "0" + mymonth; 
+            } 
+            if(myweekday < 10){ 
+            myweekday = "0" + myweekday; 
+            } 
+            return (myyear + "-" + mymonth + "-" + myweekday); 
         }
       },
       created() {
+        this.getTimeOrder();
+        this.getDay();
       },
       components: {
         // [TabItem.name]: TabItem,

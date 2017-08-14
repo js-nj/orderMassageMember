@@ -97,7 +97,7 @@ if (process.env.NODE_ENV === 'production') {
       'process.env': {
         NODE_ENV: '"development"'
       },
-      "WEBPACK_CONIFG_HOST": '"http://amptest.wisedu.com/xsfwfw/"'
+      "WEBPACK_CONIFG_HOST": '"http://172.16.26.249:8080/zen"'
     })
   ])
 }

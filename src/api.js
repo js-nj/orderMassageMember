@@ -5,7 +5,11 @@
  */
 
 export default {
-	getWechatSign: 'http://res.wisedu.com:9090/checkSign',
 	saveHealthOrder: WEBPACK_CONIFG_HOST + '/health/saveHealthOrder',
-	getHealthOrder: WEBPACK_CONIFG_HOST + '/health/getHealthOrder'
+	getHealthOrder: WEBPACK_CONIFG_HOST + '/health/getHealthOrder',
+	getDdSign: '',
+	getTimeOrder: WEBPACK_CONIFG_HOST + '/health/getTimeOrder',
+	getDay: WEBPACK_CONIFG_HOST + '/health/getDay',
+	saveHealthOrder: WEBPACK_CONIFG_HOST + '/health/saveHealthOrder',
+	getOrderInfo: WEBPACK_CONIFG_HOST + '/health/getOrderInfo'
 }
