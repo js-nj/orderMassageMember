@@ -35,6 +35,11 @@
             <mt-popup
               v-model="popupDayVisible"
               position="bottom" style="width: 100%;">
+              <div class="" style="font-size:14px;">
+                <span class="" @click="cancelDayValue" style="float:left;display:inline-block;padding: 4px 16px;">取消</span>
+                <span class="" @click="okDayValue" style="float:right;color:#26a2ff;display:inline-block;padding: 4px 16px;">确定</span>
+                <div class="" style="clear:both;"></div>
+              </div>
               <mt-picker :slots="dayslots" @change="onDaysValuesChange"></mt-picker>
             </mt-popup>
 
@@ -45,6 +50,11 @@
             <mt-popup
               v-model="popupTimeVisible"
               position="bottom" style="width: 100%;">
+              <div class="" style="font-size:14px;">
+                <span class="" @click="cancelPickerValue" style="float:left;display:inline-block;padding: 4px 16px;">取消</span>
+                <span class="" @click="okPickerValue" style="float:right;color:#26a2ff;display:inline-block;padding: 4px 16px;">确定</span>
+                <div class="" style="clear:both;"></div>
+              </div>
               <mt-picker :slots="timeslots" @change="onTimeValuesChange"></mt-picker>
             </mt-popup>
             <mt-button type="primary" size="large" class="om-button" @click="saveHealthOrder">预约</mt-button>
@@ -54,25 +64,28 @@
         <mt-tab-container-item id="2">
           <div>
             <div  class="om-pv-8 om-ph-8">
-              <table style="width:100%;">
+             <table style="width:100%;text-align:center;" >
                 <thead>
                   <tr>
                     <!-- <td>预约编号</td> -->
-                    <td>日期</td>
-                    <td>时间</td>
-                    <td>地点</td>
-                    <td>员工号</td>
+                    <td style="width:20%;">日期</td>
+        
+                    <td style="width:20%;">地点</td>
+                    <td style="width:20%;">时间</td>
                     <td>姓名</td>
+                    <td>员工号</td>
+                    
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in orderedInfo" style="height:24px;">
+                  <tr v-for="item in orderedInfo" style="height:24px;font-size:14px;line-height:26px;" class="">
                     <!-- <td v-text="item.id"></td> -->
                     <td v-text="item.dayTime"></td>
-                    <td v-text="item.timeSlot"></td>
                     <td v-text="item.station"></td>
-                    <td v-text="item.EmployeeId"></td>
-                    <td v-text="item.EmployeeName"></td>
+                    <td v-text="item.timeSlot"></td>
+                    
+                    <td v-text="item.employeeName"></td>
+                    <td v-text="item.employeeId"></td>
                   </tr>
                 </tbody>
               </table>
@@ -166,21 +179,7 @@
           tabselected:'1',
 
           orderedInfo:[
-          {
-            id:'44',
-            dayTime:'44',
-            timeSlot:'44',
-            station:'44',
-            EmployeeId:'44',
-            EmployeeName:'44'
-          },{
-            id:'44',
-            dayTime:'44',
-            timeSlot:'44',
-            station:'44',
-            EmployeeId:'44',
-            EmployeeName:'44'
-          }],
+          ],
           // username:'',
           // userid:'',
           orderdate:'',
@@ -217,7 +216,7 @@
             this.getDay();
             this.getTimeOrder();
           }else if(value == 2){
-            //this.getOrderInfo();
+            this.getOrderInfo();
           }
         }
       },
@@ -233,6 +232,20 @@
         },
         onDaysValuesChange(picker, values){
           this.pickerDayValue = values[0];
+        },
+        cancelDayValue(){
+          this.pickerDayValue = ''; 
+          this.popupDayVisible = false;
+        },
+        okDayValue(){
+          this.popupDayVisible = false;
+        },
+        cancelPickerValue(){
+          this.pickerValue = '';
+          this.popupTimeVisible = false;
+        },
+        okPickerValue(){
+          this.popupTimeVisible = false;
         },
         getTimeOrder(){
           var that = this;
@@ -290,7 +303,7 @@
                 day_time:that.pickerDayValue,
                 time_slot:that.pickerValue,
                 station:that.stationValue,
-                employeeId:'01315123'
+                employeeId:global.employeeId
               }
           }).then(function(response){
             if (response.data.rescode == 0) {
@@ -309,7 +322,7 @@
               method:"POST",
               url:api.getOrderInfo,
               params:{
-                employeeId:'01315123'
+                employeeId:global.employeeId
               }
           };
           //保存的信息
@@ -318,6 +331,13 @@
             if (responseData.rescode == 0) {
               if (responseData.resMessage) {
                 responseData.resMessage.forEach(function(item){
+                  item.dayTime = that.formatDate(new Date(item.dayTime));
+                  if (item.station == '0') {
+                    item.station = '金智园区';
+                  }
+                  if (item.station == '1') {
+                    item.station = '牛首园区';
+                  }
                   that.orderedInfo.push(item);
                 });
               }

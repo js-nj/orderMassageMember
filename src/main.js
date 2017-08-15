@@ -16,7 +16,7 @@ Vue.use(VueRouter);
 const router = new VueRouter(route);
 
 if (process.env.NODE_ENV !== 'production') {
-  global.emplId = '01197001';
+  global.employeeId = '0117290';
   new Vue({
     el: '#app',
     router,
@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== 'production') {
     }
   });
 } else {
-  axios.post(api.getDdSign, {
+  axios.post(api.getSignature, {
     sign_url: window.location.href.replace(/#(\S+)?/, '')
   }).then(function({
     data
