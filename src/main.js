@@ -18,7 +18,7 @@ Vue.use(VueRouter);
 const router = new VueRouter(route);
 
 if (process.env.NODE_ENV !== 'production') {
-  global.employeeId = '';
+  global.employeeId = '01315123';
   new Vue({
     el: '#app',
     router,
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   axios.post(api.getSignature, {
     sign_url: window.location.href.replace(/#(\S+)?/, ''),
-    flag: 1
+    flag: '1'
   }).then(function({
     data
   }) {

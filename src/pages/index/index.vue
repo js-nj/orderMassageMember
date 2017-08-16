@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div>
-      <h3 class="title">预约按摩</h3>
+      <h3 class="title">预约推拿</h3>
       <mt-navbar v-model="tabselected">
 
         <mt-tab-item id="1">预约</mt-tab-item>
@@ -70,7 +70,7 @@
         </mt-tab-container-item>
         <mt-tab-container-item id="2">
           <div>
-            <div  class="om-pv-8 om-ph-8">
+            <div  class="om-pv-8 om-ph-8" style="overflow:auto;" :style="{height:tab2ContentHeight}">
              <table style="width:100%;text-align:center;" >
                 <thead>
                   <tr>
@@ -92,7 +92,7 @@
                     <td v-text="item.timeSlot"></td>
                     
                     <td v-text="item.employeeName"></td>
-                    <td v-text="item.employeeId"></td>
+                    <td v-text="String(item.employeeId)"></td>
                   </tr>
                 </tbody>
               </table>
@@ -177,8 +177,9 @@
     background-color: #26a2ff;
     border-color:#26a2ff;
   }
-  .mint-radiolist .mint-cell:first-child {
-    background-image: linear-gradient(0deg, #d9d9d9, #d9d9d9 50%, transparent 50%);
+  .mint-radiolist .mint-cell {
+    border-top: solid 1px #d9d9d9 !important;
+    /* background-image: linear-gradient(0deg, #d9d9d9, #d9d9d9 50%, transparent 50%); */
   }
 </style>
 
@@ -201,6 +202,7 @@
           stationValue:'0',
           pickerValue:'',
           pickerDayValue:'',
+          tab2ContentHeight:'',
           //时间范围
           popupTimeVisible:false,
           popupDayVisible:false,
@@ -231,6 +233,7 @@
             this.getDay();
             //this.getTimeOrder();
           }else if(value == 2){
+            this.tab2ContentHeight = (document.body.clientHeight - 50 - 53 - 10) + 'px';
             this.getOrderInfo();
           }
         },
@@ -244,19 +247,22 @@
           this.pickerValue = values[0];
         },
         chooseTimeFiled(){
-          this.getTimeOrder();
+          that.popupTimeVisible = true;
+          //this.getTimeOrder();
         },
         chooseDay() {
           this.popupDayVisible = true;
         },
         onDaysValuesChange(picker, values){
           this.pickerDayValue = values[0];
+          this.timeslots[0].values = [];
         },
         cancelDayValue(){
           //this.pickerDayValue = ''; 
           this.popupDayVisible = false;
         },
         okDayValue(){
+          this.getTimeOrder();
           this.popupDayVisible = false;
         },
         cancelPickerValue(){
@@ -281,7 +287,6 @@
                 if (response.data.resMessage && response.data.resMessage.length>0) {
                   response.data.resMessage.map(function(item){
                     that.timeslots[0].values.push(item.timeSlot);
-                    that.popupTimeVisible = true;
                   });
                 }
             }else {
@@ -307,6 +312,7 @@
                     var formatItem = that.formatDate(new Date(item.dayTime));
                     that.dayslots[0].values.push(formatItem);
                   });
+                  that.getTimeOrder();
                 }
             }else {
               Toast('获取预约信息失败');
@@ -331,6 +337,7 @@
             }).then(function(response){
               if (response.data.rescode == 0) {
                 Toast('预约成功啦~')
+                that.tabselected = '2';
               }else if(response.data.rescode == 1) {
                 Toast(response.data.resMessage)
               }else {
