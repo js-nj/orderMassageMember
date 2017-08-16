@@ -3,20 +3,22 @@ import VueRouter from 'vue-router';
 import App from './app.vue';
 import Mint from 'bh-mint-ui2';
 import {
-  Toast
+  Toast,
+  MessageBox
 } from 'bh-mint-ui2';
 import route from './router';
 import * as utils from './utils'
 import api from './api'
 import 'bh-mint-ui2/lib/style.css'
 import init from 'bh-mixin-sdk'
+import axios from 'axios'
 
 Vue.use(Mint);
 Vue.use(VueRouter);
 const router = new VueRouter(route);
 
 if (process.env.NODE_ENV !== 'production') {
-  global.employeeId = '0117290';
+  global.employeeId = '';
   new Vue({
     el: '#app',
     router,
@@ -27,7 +29,8 @@ if (process.env.NODE_ENV !== 'production') {
   });
 } else {
   axios.post(api.getSignature, {
-    sign_url: window.location.href.replace(/#(\S+)?/, '')
+    sign_url: window.location.href.replace(/#(\S+)?/, ''),
+    flag: 1
   }).then(function({
     data
   }) {
@@ -53,7 +56,7 @@ if (process.env.NODE_ENV !== 'production') {
       dd.ready(function() {
         dd.biz.user.get({
           onSuccess: function(resp) {
-            global.emplId = resp.emplId;
+            global.employeeId = resp.emplId;
             new Vue({
               el: '#app',
               router,

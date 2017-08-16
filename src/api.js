@@ -7,10 +7,10 @@
 export default {
 	saveHealthOrder: WEBPACK_CONIFG_HOST + '/health/saveHealthOrder',
 	getHealthOrder: WEBPACK_CONIFG_HOST + '/health/getHealthOrder',
-	getDdSign: '',
 	getTimeOrder: WEBPACK_CONIFG_HOST + '/health/getTimeOrder',
 	getDay: WEBPACK_CONIFG_HOST + '/health/getDay',
 	saveHealthOrder: WEBPACK_CONIFG_HOST + '/health/saveHealthOrder',
 	getOrderInfo: WEBPACK_CONIFG_HOST + '/health/getOrderInfo',
-	getSignature: WEBPACK_CONIFG_HOST + '/dingdingController/getSignature'
+	getSignature: WEBPACK_CONIFG_HOST + '/api/getSignature'
+
 }

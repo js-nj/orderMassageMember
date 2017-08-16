@@ -1,9 +1,9 @@
 {
-  "name": "order_massage",
+  "name": "order_massage_member",
   "description": "A Vue.js project",
   "version": "1.0.0",
   "author": "xujiabin <xujiabin0114@163.com>",
-  "packageName": "vueapp",
+  "packageName": "order_massage_member",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --inline --hot",

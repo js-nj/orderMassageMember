@@ -28,36 +28,43 @@
             <!-- <mt-field label="员工号" placeholder="请输入员工号" type="number" v-model="userid"></mt-field>
             <mt-field label="姓名" placeholder="请输入姓名" type="text" v-model="username"></mt-field> -->
             <!-- <mt-field label="日期" placeholder="日期" type="date" v-model="orderdate"></mt-field> -->
-            <!-- 选择预约的日期 -->
-            <div v-on:click="chooseDay">
-              <mt-field label="设置日期" placeholder="请选择日期" type="text" v-model="pickerDayValue" ></mt-field>
-            </div>
-            <mt-popup
-              v-model="popupDayVisible"
-              position="bottom" style="width: 100%;">
-              <div class="" style="font-size:14px;">
-                <span class="" @click="cancelDayValue" style="float:left;display:inline-block;padding: 4px 16px;">取消</span>
-                <span class="" @click="okDayValue" style="float:right;color:#26a2ff;display:inline-block;padding: 4px 16px;">确定</span>
-                <div class="" style="clear:both;"></div>
+            <div v-if="dayslots[0].values.length">
+              <!-- 选择预约的日期 -->
+              <div v-on:click="chooseDay" style="position:relative;">
+                <div style="width:100%;height:48px;z-index:9;position:absolute;"></div>
+                <mt-field label="设置日期" placeholder="请选择日期" type="text" v-model="pickerDayValue" ></mt-field>
               </div>
-              <mt-picker :slots="dayslots" @change="onDaysValuesChange"></mt-picker>
-            </mt-popup>
+              <mt-popup
+                v-model="popupDayVisible"
+                position="bottom" style="width: 100%;">
+                <div class="" style="font-size:14px;">
+                  <span class="" @click="cancelDayValue" style="float:left;display:inline-block;padding: 4px 16px;">取消</span>
+                  <span class="" @click="okDayValue" style="float:right;color:#26a2ff;display:inline-block;padding: 4px 16px;">确定</span>
+                  <div class="" style="clear:both;"></div>
+                </div>
+                <mt-picker :slots="dayslots" @change="onDaysValuesChange"></mt-picker>
+              </mt-popup>
 
-            <!-- 选择预约的时间段 -->
-            <div v-on:click="chooseTimeFiled">
-              <mt-field label="设置时间范围" placeholder="请输入时间" type="text" v-model="pickerValue" ></mt-field>
-            </div>
-            <mt-popup
-              v-model="popupTimeVisible"
-              position="bottom" style="width: 100%;">
-              <div class="" style="font-size:14px;">
-                <span class="" @click="cancelPickerValue" style="float:left;display:inline-block;padding: 4px 16px;">取消</span>
-                <span class="" @click="okPickerValue" style="float:right;color:#26a2ff;display:inline-block;padding: 4px 16px;">确定</span>
-                <div class="" style="clear:both;"></div>
+              <!-- 选择预约的时间段 -->
+              <div v-on:click="chooseTimeFiled" style="position:relative;">
+                <div style="width:100%;height:48px;z-index:9;position:absolute;"></div>
+                <mt-field label="设置时间范围" placeholder="请输入时间" type="text" v-model="pickerValue" ></mt-field>
               </div>
-              <mt-picker :slots="timeslots" @change="onTimeValuesChange"></mt-picker>
-            </mt-popup>
-            <mt-button type="primary" size="large" class="om-button" @click="saveHealthOrder">预约</mt-button>
+              <mt-popup
+                v-model="popupTimeVisible"
+                position="bottom" style="width: 100%;">
+                <div class="" style="font-size:14px;">
+                  <span class="" @click="cancelPickerValue" style="float:left;display:inline-block;padding: 4px 16px;">取消</span>
+                  <span class="" @click="okPickerValue" style="float:right;color:#26a2ff;display:inline-block;padding: 4px 16px;">确定</span>
+                  <div class="" style="clear:both;"></div>
+                </div>
+                <mt-picker :slots="timeslots" @change="onTimeValuesChange"></mt-picker>
+              </mt-popup>
+              <mt-button type="primary" size="large" class="om-button" @click="saveHealthOrder">预约</mt-button>
+            </div>
+            <div v-else style="padding: 16px 36px;color: #e24034;">
+              暂无可预约信息，请联系管理员小姐姐~
+            </div>
 
           </div>
         </mt-tab-container-item>
@@ -159,17 +166,25 @@
     color: #333;
     font-weight: 600;
   }
-  .mint-radiolist {
+  /*.mint-radiolist {
         padding: 0 29px;
-  }
+  }*/
   .mint-radiolist-title {
     font-weight: 400;
+    padding-left: 28px;
+  }
+  .mint-radio-input:checked + .mint-radio-core {
+    background-color: #26a2ff;
+    border-color:#26a2ff;
+  }
+  .mint-radiolist .mint-cell:first-child {
+    background-image: linear-gradient(0deg, #d9d9d9, #d9d9d9 50%, transparent 50%);
   }
 </style>
 
 <script>
   //import CalendarDemo from './calendar-demo.vue'
-  import { Toast} from 'bh-mint-ui2';
+  import { Toast,MessageBox } from 'bh-mint-ui2';
   import api from '../../api.js';
   import axios from 'axios'
   import moment from 'moment'
@@ -214,10 +229,14 @@
         tabselected:function(value,oldvalue){
           if (value == 1) {
             this.getDay();
-            this.getTimeOrder();
+            //this.getTimeOrder();
           }else if(value == 2){
             this.getOrderInfo();
           }
+        },
+        stationValue:function(value,oldvalue){
+          //this.getTimeOrder();
+          this.getDay();
         }
       },
       methods: {
@@ -225,7 +244,7 @@
           this.pickerValue = values[0];
         },
         chooseTimeFiled(){
-          this.popupTimeVisible = true;
+          this.getTimeOrder();
         },
         chooseDay() {
           this.popupDayVisible = true;
@@ -234,7 +253,7 @@
           this.pickerDayValue = values[0];
         },
         cancelDayValue(){
-          this.pickerDayValue = ''; 
+          //this.pickerDayValue = ''; 
           this.popupDayVisible = false;
         },
         okDayValue(){
@@ -254,6 +273,7 @@
               method:"POST",
               url:api.getTimeOrder,
               params:{
+                day_time:that.pickerDayValue,
                 station:that.stationValue
               }
           }).then(function(response){
@@ -261,6 +281,7 @@
                 if (response.data.resMessage && response.data.resMessage.length>0) {
                   response.data.resMessage.map(function(item){
                     that.timeslots[0].values.push(item.timeSlot);
+                    that.popupTimeVisible = true;
                   });
                 }
             }else {
@@ -296,24 +317,29 @@
         },
         saveHealthOrder(){
           var that = this;
-          axios({
-              method:"POST",
-              url:api.saveHealthOrder,
-              params:{
-                day_time:that.pickerDayValue,
-                time_slot:that.pickerValue,
-                station:that.stationValue,
-                employeeId:global.employeeId
+          // MessageBox.confirm('确定提交吗？').then(action => {
+          //   console.log(action);
+            axios({
+                method:"POST",
+                url:api.saveHealthOrder,
+                params:{
+                  day_time:that.pickerDayValue,
+                  time_slot:that.pickerValue,
+                  station:that.stationValue,
+                  employeeId:global.employeeId
+                }
+            }).then(function(response){
+              if (response.data.rescode == 0) {
+                Toast('预约成功啦~')
+              }else if(response.data.rescode == 1) {
+                Toast(response.data.resMessage)
+              }else {
+                Toast('预约失败，下次早点预约奥~')
               }
-          }).then(function(response){
-            if (response.data.rescode == 0) {
-                
-            }else {
-              Toast('保存预约信息失败');
-            }
-          }).catch(function(err){
-            Toast(err);
-          });
+            }).catch(function(err){
+              Toast('预约失败，下次早点预约奥~')
+            });
+          // }); 
         },
         getOrderInfo() {
           var that= this;
@@ -364,11 +390,10 @@
         }
       },
       created() {
-        this.getTimeOrder();
         this.getDay();
       },
       components: {
-        // [TabItem.name]: TabItem,
+        [MessageBox.name]: MessageBox,
         // [Navbar.name]: Navbar,
         // [Field.name]: Field,
         // [Cell.name]: Cell,
