@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div>
-      <h3 class="title">预约推拿</h3>
+      <!-- <h3 class="title">预约推拿</h3> -->
       <mt-navbar v-model="tabselected">
 
         <mt-tab-item id="1">预约</mt-tab-item>
