@@ -247,7 +247,7 @@
           this.pickerValue = values[0];
         },
         chooseTimeFiled(){
-          that.popupTimeVisible = true;
+          this.popupTimeVisible = true;
           //this.getTimeOrder();
         },
         chooseDay() {
@@ -312,7 +312,9 @@
                     var formatItem = that.formatDate(new Date(item.dayTime));
                     that.dayslots[0].values.push(formatItem);
                   });
-                  that.getTimeOrder();
+                  setTimeout(function(){
+                    that.getTimeOrder();
+                  },50);
                 }
             }else {
               Toast('获取预约信息失败');
