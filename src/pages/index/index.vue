@@ -63,7 +63,7 @@
               <mt-button type="primary" size="large" class="om-button" @click="saveHealthOrder">预约</mt-button>
             </div>
             <div v-else style="padding: 16px 36px;color: #e24034;">
-              暂无可预约信息，请联系管理员小姐姐~
+              本周可预约已全部预约完毕，请等待HR小姐姐开放下次预约机会哦~
             </div>
 
           </div>
