@@ -315,13 +315,13 @@
         getDay(){
           var that = this;
           var tmpResult = '';
-          if (localStorage.getItem('dayTimeDatas')){
-            tmpResult = JSON.parse(localStorage.getItem('dayTimeDatas'));
-          }
-          console.log('tmpResult:'+tmpResult);
-          if (localStorage.getItem('dayTimeDatas') && tmpResult && tmpResult.yq && tmpResult.ns) {
-            that.dayTimeFormate(tmpResult);
-          }else {
+          // if (localStorage.getItem('dayTimeDatas')){
+          //   tmpResult = JSON.parse(localStorage.getItem('dayTimeDatas'));
+          // }
+          // console.log('tmpResult:'+tmpResult);
+          // if (localStorage.getItem('dayTimeDatas') && tmpResult && tmpResult.yq && tmpResult.ns) {
+          //   that.dayTimeFormate(tmpResult);
+          // }else {
             // var response = {"resMessage":{"ns":[{"column1":"2","timeSlot":"12:00-12:30","station":"1","dayTime":"Thu Sep 21 00:00:00 CST 2017"},{"column1":"1","timeSlot":"12:30-13:00","station":"1","dayTime":"Thu Sep 21 00:00:00 CST 2017"},{"column1":"1","timeSlot":"13:00-13:30","station":"1","dayTime":"Thu Sep 21 00:00:00 CST 2017"}],"yq":[{"column1":"1","timeSlot":"13:30-14:00","station":"0","dayTime":"Thu Sep 21 00:00:00 CST 2017"}]},"rescode":0};
             // localStorage.setItem('dayTimeDatas',JSON.stringify(response.resMessage));
             // that.dayTimeFormate(response.resMessage);
@@ -335,7 +335,7 @@
               if (response.data.rescode == 0) {
                   if (response.data.resMessage && response.data.resMessage.yq && response.data.resMessage.ns) {
                     localStorage.setItem('dayTimeDatas',JSON.stringify(response.data.resMessage));
-                    that.dayTimeFormate(response.data.resMessage);
+                    that.getDayAndTime(that.dayTimeFormate);
                   }
               }else {
                 Toast('获取预约信息失败');
@@ -343,7 +343,28 @@
             }).catch(function(err){
               Toast(err);
             });
-          }
+          //}
+        },
+        getDayAndTime:function(cb){
+          var that = this;
+          axios({
+              method:"POST",
+              url:api.getDay,
+              params:{
+                //station:that.stationValue
+              }
+          }).then(function(response){
+            if (response.data.rescode == 0) {
+                if (response.data.resMessage && response.data.resMessage.yq && response.data.resMessage.ns) {
+                  localStorage.setItem('dayTimeDatas',JSON.stringify(response.data.resMessage));
+                  cb && cb(response.data.resMessage);
+                }
+            }else {
+              Toast('获取预约信息失败');
+            }
+          }).catch(function(err){
+            Toast(err);
+          });
         },
         dayTimeFormate:function(arr){
           var that = this;
@@ -388,26 +409,28 @@
                 Toast('预约成功啦~')
                 that.tabselected = '2';
                 //预约成功后，把相应地区，日期，时间段的数量减 1
-                var tmpResult = JSON.parse(localStorage.getItem('dayTimeDatas'));
-                var tmpArray = [];
-                if (that.stationValue == '0') {
-                  tmpArray = tmpResult.yq;
-                }else if (that.stationValue == '1'){
-                  tmpArray = tmpResult.ns;
-                }
-                var targetItemIndex = _.findIndex(tmpArray, function(chr) {
-                  var formatItem = that.formatDate(new Date(chr.dayTime));
-                  return ((formatItem == that.pickerDayValue) && (chr.timeSlot == that.pickerValue));
-                });
-                if (Number(tmpArray[targetItemIndex].column1)) {
-                  tmpArray[targetItemIndex].column1 = Number(tmpArray[targetItemIndex].column1) - 1;
-                }
-                localStorage.setItem('dayTimeDatas',JSON.stringify(tmpResult));
+                // var tmpResult = JSON.parse(localStorage.getItem('dayTimeDatas'));
+                // var tmpArray = [];
+                // if (that.stationValue == '0') {
+                //   tmpArray = tmpResult.yq;
+                // }else if (that.stationValue == '1'){
+                //   tmpArray = tmpResult.ns;
+                // }
+                // var targetItemIndex = _.findIndex(tmpArray, function(chr) {
+                //   var formatItem = that.formatDate(new Date(chr.dayTime));
+                //   return ((formatItem == that.pickerDayValue) && (chr.timeSlot == that.pickerValue));
+                // });
+                // if (Number(tmpArray[targetItemIndex].column1)) {
+                //   tmpArray[targetItemIndex].column1 = Number(tmpArray[targetItemIndex].column1) - 1;
+                // }
+                // localStorage.setItem('dayTimeDatas',JSON.stringify(tmpResult));
               }else if(response.data.rescode == 1) {
-                Toast(response.data.resMessage)
+                Toast(response.data.resMessage);
               }else {
-                Toast('预约失败，下次早点预约奥~')
+                Toast('预约失败，下次早点预约奥~');
               }
+              //更新本地的日期，时间段，预约数量的数据
+              //that.getDayAndTime();
             }).catch(function(err){
               Toast('预约失败，下次早点预约奥~')
             });
