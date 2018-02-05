@@ -11,6 +11,6 @@ export default {
 	getDay: WEBPACK_CONIFG_HOST + '/health/getDay',
 	saveHealthOrder: WEBPACK_CONIFG_HOST + '/health/saveHealthOrder',
 	getOrderInfo: WEBPACK_CONIFG_HOST + '/health/getOrderInfo',
-	getSignature: WEBPACK_CONIFG_HOST + '/api/getSignature'
+	getSignature: WEBPACK_CONIFG_HOST + '/health/getSignature'
 
 }
